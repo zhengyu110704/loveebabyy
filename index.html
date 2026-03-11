@@ -219,6 +219,48 @@
                 box-shadow: 0 0 35px rgba(255, 105, 180, 0.7);
             }
         }
+
+        /* Mobile Adjustments (Better suit phone screens) */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+                /* Scaled down even more */
+                letter-spacing: 1px;
+            }
+
+            p {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+
+            .mocha-gif {
+                width: 130px;
+                /* Slightly smaller bear */
+            }
+
+            .voice-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+                margin-top: 15px;
+            }
+
+            .moon {
+                width: 50px;
+                height: 50px;
+                right: 20px;
+                top: 20px;
+            }
+
+            #click-hint {
+                font-size: 0.75rem;
+                bottom: 15px;
+            }
+
+            .hero {
+                gap: 5px;
+                /* Tighter vertical stack */
+            }
+        }
     </style>
 </head>
 
