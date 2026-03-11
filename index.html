@@ -561,19 +561,19 @@
 
             if (audio.paused) {
                 audio.volume = 0.5; // Softer volume
-                bgMusic.volume = 0.05; // Lower ducking volume
+                bgMusic.pause(); // Stop background music
                 audio.play();
                 btn.textContent = '🎵 Playing...';
                 btn.classList.add('playing');
             } else {
                 audio.pause();
                 audio.currentTime = 0;
-                bgMusic.volume = 0.4;
+                bgMusic.play(); // Resume background music
                 btn.textContent = '💌 BABYY 按 yi xiaaa';
                 btn.classList.remove('playing');
             }
             audio.onended = () => {
-                bgMusic.volume = 0.4;
+                bgMusic.play(); // Resume background music
                 btn.textContent = '💌 BABYY 按 yi xiaaa';
                 btn.classList.remove('playing');
             };
