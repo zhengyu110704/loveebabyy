@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIII BABYYY❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap');
+
+        :root {
+            --sky-bg: radial-gradient(circle at 50% 100%, #1b2735 0%, #090a0f 100%);
+            --accent-pink: #ff4d94;
+            --moon-color: #fefcd7;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--sky-bg);
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+        }
+
+        /* Star Field */
+        .night-sky {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            perspective: 1000px;
+        }
+
+        #stars-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Moon */
+        .moon {
+            position: absolute;
+            top: 50px;
+            right: 80px;
+            width: 100px;
+            height: 100px;
+            background: var(--moon-color);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(254, 252, 215, 0.4), inset -15px -15px 30px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            box-shadow: 30px 10px 0 2px rgba(0, 0, 0, 0.05), 10px 40px 0 -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Fireworks Canvas */
+        #fireworks-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Content Container */
+        .hero {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            opacity: 0;
+            transition: opacity 2.5s ease-in-out;
+        }
+
+        .hero.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 77, 148, 0.6);
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        p {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+
+        /* Mocha Bear GIF */
+        .bear-container {
+            pointer-events: none;
+        }
+
+        .mocha-gif {
+            width: 200px;
+            animation: bearFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 150, 180, 0.4));
+        }
+
+        @keyframes bearFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+
+        /* Horizon Glow */
+        .horizon {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30vh;
+            background: linear-gradient(to top, rgba(255, 77, 148, 0.05), transparent);
+            z-index: 2;
+        }
+
+        /* Falling Hearts */
+        .heart {
+            position: absolute;
+            color: rgba(255, 77, 148, 0.3);
+            pointer-events: none;
+            z-index: 4;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Voice Message Button */
+        .voice-btn {
+            margin-top: 20px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ff69b4, #ff4d94);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            pointer-events: all;
+            letter-spacing: 1px;
+            box-shadow: 0 0 25px rgba(255, 105, 180, 0.5);
+            transition: all 0.3s ease;
+            animation: btnGlow 2s ease-in-out infinite alternate;
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.7);
+        }
+
+        .voice-btn.playing {
+            background: linear-gradient(135deg, #ff4d94, #c0392b);
+            animation: none;
+        }
+
+        @keyframes btnGlow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+            }
+
+            to {
+                box-shadow: 0 0 35px rgba(255, 105, 180, 0.7);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="night-sky">
+        <canvas id="stars-canvas"></canvas>
+    </div>
+
+    <div class="moon"></div>
+    <div class="horizon"></div>
+
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="hero" id="hero-content">
+        <div class="bear-container">
+            <img class="mocha-gif" src="https://media.tenor.com/ZhNxfL0GmoMAAAAj/mocha-bear-hearts.gif"
+                alt="Mocha Bear">
+        </div>
+        <h1>HIIII BABYYYY ❤️</h1>
+        <p>你是全世界最可爱的女朋友✨</p>
+        <button class="voice-btn" id="voiceBtn" onclick="playVoice(event)">💌 BABYY 按 yi xiaaa</button>
+        <audio id="voiceAudio" src="Lovee youu babyy.mp3"></audio>
+        <audio id="bgMusic" src="background.mp3" loop></audio>
+    </div>
+
+    <!-- Click Hint -->
+    <div id="click-hint"
+        style="position:fixed; bottom: 30px; width:100%; text-align:center; font-family:'Outfit'; color:white; opacity:0.6; z-index:100; pointer-events:none; transition: opacity 1s; letter-spacing: 1px;">
+        BABYY 按那个天空一下 ✨
+    </div>
+
+
+    <script>
+        // --- Star Field Logic ---
+        const starsCanvas = document.getElementById('stars-canvas');
+        const sCtx = starsCanvas.getContext('2d');
+        let stars = [];
+
+        function initStars() {
+            starsCanvas.width = window.innerWidth;
+            starsCanvas.height = window.innerHeight;
+            stars = [];
+
+            // Create a very dense field of 2500 tiny background stars
+            for (let i = 0; i < 2500; i++) {
+                stars.push({
+                    x: Math.random() * starsCanvas.width,
+                    y: Math.random() * starsCanvas.height,
+                    size: Math.random() * 1.2,
+                    opacity: Math.random(),
+                    speed: Math.random() * 0.01 + 0.002
+                });
+            }
+
+            // Add 200 larger, brighter twinkling stars
+            for (let i = 0; i < 200; i++) {
+                stars.push({
+                    x: Math.random() * starsCanvas.width,
+                    y: Math.random() * starsCanvas.height,
+                    size: Math.random() * 2 + 1,
+                    opacity: Math.random(),
+                    speed: Math.random() * 0.02 + 0.005
+                });
+            }
+        }
+
+        function drawStars() {
+            sCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+            stars.forEach(s => {
+                s.opacity += s.speed;
+                if (s.opacity > 1 || s.opacity < 0) s.speed *= -1;
+                sCtx.beginPath();
+                sCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                sCtx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, s.opacity)})`;
+                sCtx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+
+        // --- Realistic Fireworks Engine V2 ---
+        const fireworksCanvas = document.getElementById('fireworks-canvas');
+        const fCtx = fireworksCanvas.getContext('2d');
+        let fireworks = [];
+        let particles = [];
+        let experienceStarted = false;
+
+        function resizeFireworks() {
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+        }
+
+        class Firework {
+            constructor() {
+                this.x = Math.random() * fireworksCanvas.width;
+                this.y = fireworksCanvas.height;
+                this.destX = this.x + (Math.random() - 0.5) * 150;
+                this.destY = Math.random() * fireworksCanvas.height * 0.6 + 50;
+                this.speed = 1.4 + Math.random() * 0.8;
+                this.angle = Math.atan2(this.destY - this.y, this.destX - this.x);
+                this.velocity = {
+                    x: Math.cos(this.angle) * this.speed * 5.2,
+                    y: Math.sin(this.angle) * this.speed * 5.2
+                };
+                this.hue = Math.random() * 360;
+                this.exploded = false;
+                this.trail = [];
+            }
+
+            draw() {
+                this.trail.forEach((t, i) => {
+                    const opacity = i / this.trail.length;
+                    fCtx.beginPath();
+                    fCtx.arc(t.x, t.y, 1.2 * opacity, 0, Math.PI * 2);
+                    fCtx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${opacity * 0.5})`;
+                    fCtx.fill();
+                });
+
+                fCtx.beginPath();
+                fCtx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                fCtx.fillStyle = `hsl(${this.hue}, 100%, 80%)`;
+                fCtx.fill();
+            }
+
+            update() {
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 12) this.trail.shift();
+
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+
+                this.velocity.x *= 0.99;
+                this.velocity.y *= 0.99;
+                this.velocity.y += 0.02;
+
+                if (this.velocity.y >= -1.0 || this.y <= this.destY) {
+                    this.explode();
+                    this.exploded = true;
+                }
+            }
+
+            explode() {
+                const isHeart = Math.random() < 0.4;
+                const particleCount = isHeart ? 120 : 80;
+                const baseHue = this.hue;
+
+                for (let i = 0; i < particleCount; i++) {
+                    let vx, vy;
+                    if (isHeart) {
+                        const t = (i / particleCount) * Math.PI * 2;
+                        vx = 16 * Math.pow(Math.sin(t), 3);
+                        vy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+                        const scale = 0.35 + Math.random() * 0.1;
+                        vx *= scale;
+                        vy *= scale;
+                    } else {
+                        const angle = Math.random() * Math.PI * 2;
+                        const force = Math.random() * 6 + 3;
+                        vx = Math.cos(angle) * force;
+                        vy = Math.sin(angle) * force;
+                    }
+
+                    particles.push(new Particle(
+                        this.x,
+                        this.y,
+                        `hsl(${baseHue}, 100%, ${60 + Math.random() * 20}%)`,
+                        { x: vx, y: vy }
+                    ));
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color, velocity) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.velocity = velocity;
+                this.alpha = 1;
+                this.friction = 0.96;
+                this.gravity = 0.12;
+                this.decay = 0.007 + Math.random() * 0.008;
+            }
+
+            draw() {
+                fCtx.save();
+                fCtx.globalAlpha = this.alpha;
+                fCtx.beginPath();
+                fCtx.arc(this.x, this.y, 1.3, 0, Math.PI * 2);
+                fCtx.fillStyle = this.color;
+                fCtx.shadowBlur = 6;
+                fCtx.shadowColor = this.color;
+                fCtx.fill();
+                fCtx.restore();
+            }
+
+            update() {
+                this.velocity.x *= this.friction;
+                this.velocity.y *= this.friction;
+                this.velocity.y += this.gravity;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= this.decay;
+            }
+        }
+
+        function animateFireworks() {
+            fCtx.globalCompositeOperation = 'destination-out';
+            fCtx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+            fCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+            fCtx.globalCompositeOperation = 'lighter';
+
+            fireworks.forEach((fw, index) => {
+                fw.update();
+                fw.draw();
+                if (fw.exploded) fireworks.splice(index, 1);
+            });
+
+            particles.forEach((p, index) => {
+                if (p.alpha > 0) {
+                    p.update();
+                    p.draw();
+                } else {
+                    particles.splice(index, 1);
+                }
+            });
+
+            if (experienceStarted && Math.random() < 0.02) {
+                const burstGroup = Math.random() < 0.3 ? (Math.floor(Math.random() * 3) + 1) : 1;
+                for (let i = 0; i < burstGroup; i++) {
+                    setTimeout(() => fireworks.push(new Firework()), i * 400);
+                }
+            }
+            requestAnimationFrame(animateFireworks);
+        }
+
+        // --- Hearts Logic ---
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '-20px';
+            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            heart.style.animationDuration = Math.random() * 3 + 5 + 's';
+            heart.style.opacity = Math.random() * 0.5 + 0.2;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
+        }
+
+        // --- Reveal Logic ---
+        function revealExperience() {
+            if (experienceStarted) return;
+            experienceStarted = true;
+
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(e => console.log("Music blocked", e));
+
+            document.getElementById('hero-content').classList.add('visible');
+            document.getElementById('click-hint').style.opacity = '0';
+
+            // Initial burst
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => fireworks.push(new Firework()), i * 600);
+            }
+        }
+
+        window.addEventListener('click', revealExperience);
+
+        // --- Voice Message ---
+        function playVoice(event) {
+            if (!experienceStarted) return; // Safeguard: can't play until sky is clicked
+            if (event) event.stopPropagation();
+
+            const bgMusic = document.getElementById('bgMusic');
+            const audio = document.getElementById('voiceAudio');
+            const btn = document.getElementById('voiceBtn');
+
+            if (audio.paused) {
+                audio.volume = 0.5; // Softer volume
+                bgMusic.volume = 0.05; // Lower ducking volume
+                audio.play();
+                btn.textContent = '🎵 Playing...';
+                btn.classList.add('playing');
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+                bgMusic.volume = 0.4;
+                btn.textContent = '💌 BABYY 按 yi xiaaa';
+                btn.classList.remove('playing');
+            }
+            audio.onended = () => {
+                bgMusic.volume = 0.4;
+                btn.textContent = '💌 BABYY 按 yi xiaaa';
+                btn.classList.remove('playing');
+            };
+        }
+
+        // Init
+        window.addEventListener('resize', () => {
+            initStars();
+            resizeFireworks();
+        });
+
+        initStars();
+        drawStars();
+        resizeFireworks();
+        animateFireworks();
+        setInterval(createHeart, 800);
+    </script>
+</body>
+
+</html>
